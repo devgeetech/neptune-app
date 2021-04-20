@@ -18,9 +18,9 @@ export default function Mainevents() {
         () => [
           {
             col1: '1',
-            col2: 'Peermade',
-            col3: 'Landslide',
-            col4: 'High',
+            col2: 'California',
+            col3: 'Earthquake',
+            col4: 'Low',
             col5: <div>
                 <button>Send Alert</button>
             </div>

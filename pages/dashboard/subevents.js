@@ -16,36 +16,36 @@ export default function Subevents() {
 
     const data = React.useMemo(
         () => [
-          {
-            col1: '1',
-            col2: 'Peermade',
-            col3: 'Food',
-            col4: 'Landslide',
-            col5: 'Low',
-            col6: <div>
-                <button>Resolve</button>
-            </div>
-          },
-          {
-            col1: '2',
-            col2: 'Peermade',
-            col3: 'Rescue',
-            col4: 'Landslide',
-            col5: 'High',
-            col6: <div>
-                <button>Resolve</button>
-            </div>
-          },
-          { 
-            col1: '3',
-            col2: 'Kanamala',
-            col3: 'Water',
-            col4: 'Flood',
-            col5: 'High',
-            col6: <div>
-                <button>Resolve</button>
-            </div>
-          },
+        //   {
+        //     col1: '1',
+        //     col2: 'Peermade',
+        //     col3: 'Food',
+        //     col4: 'Landslide',
+        //     col5: 'Low',
+        //     col6: <div>
+        //         <button>Resolve</button>
+        //     </div>
+        //   },
+        //   {
+        //     col1: '2',
+        //     col2: 'Peermade',
+        //     col3: 'Rescue',
+        //     col4: 'Landslide',
+        //     col5: 'High',
+        //     col6: <div>
+        //         <button>Resolve</button>
+        //     </div>
+        //   },
+        //   { 
+        //     col1: '3',
+        //     col2: 'Kanamala',
+        //     col3: 'Water',
+        //     col4: 'Flood',
+        //     col5: 'High',
+        //     col6: <div>
+        //         <button>Resolve</button>
+        //     </div>
+        //   },
         ],
         []
       )
