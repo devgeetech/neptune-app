@@ -5,6 +5,8 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
 import Layout from '../../components/Layout/Layout'
+// import ClientOnly from '../../components/ClientOnly'
+// import DataHydrator from '../../components/utils/dataHydrator'
 
 import styles from '../../styles/Dashboard.module.css'
 
@@ -16,6 +18,8 @@ export default function Dashboard() {
 
     const { user } = useUser();
     const router = useRouter()
+
+    
 
     useEffect(() => {
         if(user === undefined) {
@@ -31,7 +35,9 @@ export default function Dashboard() {
         </Head>
         <Layout>
             <div className={styles.map}>
-                <MapWithNoSSR />
+                {/* <ClientOnly> */}
+                    <MapWithNoSSR />
+                {/* </ClientOnly> */}
             </div>
         </Layout>
         </div> 
