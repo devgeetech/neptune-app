@@ -5,8 +5,6 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
 import Layout from '../../components/Layout/Layout'
-// import ClientOnly from '../../components/ClientOnly'
-// import DataHydrator from '../../components/utils/dataHydrator'
 
 import styles from '../../styles/Dashboard.module.css'
 

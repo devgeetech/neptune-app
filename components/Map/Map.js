@@ -9,6 +9,8 @@ import { useQuery, gql } from "@apollo/client";
 import Spinner from '../UI/Spinner/Spinner'
 import {geocodes} from '../utils/geoCoding'
 
+// import {  iconSOS  } from './Icons';
+
 const QUERY = gql`
   query getCurrentEvents{
     current_event {
@@ -17,6 +19,12 @@ const QUERY = gql`
       location_frequency
       locations
     }
+    help_tweets(query: {status: "1"}) {
+        location
+        status
+        timestamp
+        tweet
+    }
   }
 `;
 
@@ -24,7 +32,7 @@ const purpleOptions = { color: 'purple' }
 
 const Map = () => {
 
-    const { data, loading, error } = useQuery(QUERY);
+    const { data } = useQuery(QUERY);
     const [geoCenter, updGeoCenter] = useState([9.299283023092007, 76.61524601418083])
 
     useEffect(() => {
@@ -35,12 +43,10 @@ const Map = () => {
         }
     }, [data])
 
-    // if(data){
-    //     console.log(data)
-    //     console.log(geoCenter)
-    // }
-
-    // console.log(DataHydrator())
+    if(data){
+        console.log(data)
+        console.log(geoCenter)
+    }
 
     const Markers = data ? 
         data.current_event.locations.length>=1 ?
@@ -75,6 +81,37 @@ const Map = () => {
                 }
             }) 
                 : [] : []
+       
+    const helpMarkers = data ? 
+        data.help_tweets.length>0 ?
+            data.help_tweets.map((helpObj, helpIndex) => {
+                if(geocodes[helpObj.location]) {
+                    return(
+                        <FeatureGroup key={helpIndex}>
+                            <Marker 
+                                position={geocodes[helpObj.location]}
+                                draggable={false}
+                                animate={true}
+                                // icon={iconSOS}
+                            >
+                                <Popup>
+                                    <div>
+                                        <div>
+                                            <strong>Tweet:</strong> {helpObj.tweet}
+                                        </div>
+                                        <div>
+                                            <strong>Time:</strong> {helpObj.timestamp}
+                                        </div>
+                                    </div>
+                                </Popup>
+                            </Marker>
+                        </FeatureGroup>
+                    )
+                } else {
+                    return []
+                }
+            }) 
+                : [] : []            
 
     const MapComp =()=> (
         <MapContainer center={geoCenter} zoom={7} scrollWheelZoom={false} style={{height: "100%", width: "100%"}}>
@@ -83,6 +120,9 @@ const Map = () => {
                     attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
                 />
             {Markers.map(el => {
+                return el
+            })}
+            {helpMarkers.map(el => {
                 return el
             })}
         </MapContainer>

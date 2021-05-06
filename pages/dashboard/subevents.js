@@ -1,4 +1,5 @@
 import React from "react";
+import { useQuery, gql } from "@apollo/client";
 import { useTable } from "react-table";
 import Head from 'next/head'
 import { useUser } from '@auth0/nextjs-auth0';
@@ -9,71 +10,55 @@ import Layout from '../../components/Layout/Layout'
 
 import styles from '../../styles/Subevents.module.css'
 
+const QUERY = gql`
+  query getCurrentEvents{
+    help_tweets(query: {status: "1"}) {
+        location
+        status
+        timestamp
+        tweet
+    }
+  }
+`;
+
 export default function Subevents() {
 
     const { user } = useUser();
     const router = useRouter()
 
+    const { data: apiData } = useQuery(QUERY);
+
     const data = React.useMemo(
-        () => [
-        //   {
-        //     col1: '1',
-        //     col2: 'Peermade',
-        //     col3: 'Food',
-        //     col4: 'Landslide',
-        //     col5: 'Low',
-        //     col6: <div>
-        //         <button>Resolve</button>
-        //     </div>
-        //   },
-        //   {
-        //     col1: '2',
-        //     col2: 'Peermade',
-        //     col3: 'Rescue',
-        //     col4: 'Landslide',
-        //     col5: 'High',
-        //     col6: <div>
-        //         <button>Resolve</button>
-        //     </div>
-        //   },
-        //   { 
-        //     col1: '3',
-        //     col2: 'Kanamala',
-        //     col3: 'Water',
-        //     col4: 'Flood',
-        //     col5: 'High',
-        //     col6: <div>
-        //         <button>Resolve</button>
-        //     </div>
-        //   },
-        ],
-        []
+        () => {
+            return apiData!=null ? apiData.help_tweets.map((help_tweet, index) => {
+                return {
+                    col1: index+1,
+                    col2: help_tweet.tweet,
+                    col3: help_tweet.location,
+                    col4: <div><button>Resolve</button></div>
+                }
+            }) : [] 
+        },   
+        [apiData]
       )
+      
     const columns = React.useMemo(
         () => [
             {
-            Header: ' ',
+            Header: '#',
             accessor: 'col1',
             },
             {
-            Header: 'Location',
+            Header: 'Tweet',
             accessor: 'col2',
             },
             {
-                Header: 'Request Type',
+                Header: 'Location',
                 accessor: 'col3',
             },
             {
-                Header: 'Disaster Type',
-                accessor: 'col4',
-            },
-            {
-                Header: 'Urgency',
-                accessor: 'col5',
-            },
-            {
                 Header: 'Action',
-                accessor: 'col6',
+                accessor: 'col4',
             },
         ],
         []
@@ -146,7 +131,7 @@ export default function Subevents() {
                                         {...cell.getCellProps()}
                                         style={{
                                             padding: '10px',
-                                            textAlign: 'center',
+                                            textAlign: 'left',
                                             height: "64px",
                                             fontSize: "1rem",
                                             fontWeight: "500"

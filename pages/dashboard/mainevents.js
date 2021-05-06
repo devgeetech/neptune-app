@@ -1,4 +1,5 @@
 import React from "react";
+import { useQuery, gql } from "@apollo/client";
 import { useTable } from "react-table";
 import Head from 'next/head'
 import { useUser } from '@auth0/nextjs-auth0';
@@ -9,47 +10,46 @@ import Layout from '../../components/Layout/Layout'
 
 import styles from '../../styles/Subevents.module.css'
 
+const QUERY = gql`
+  query getCurrentEvents{
+    current_events {
+      _id
+      event_type
+      location_frequency
+      locations
+    }
+  }
+`;
+
 export default function Mainevents() {
 
     const { user } = useUser();
     const router = useRouter()
 
+    const { data: apiData } = useQuery(QUERY);
+
     const data = React.useMemo(
-        () => [
-          {
-            col1: '1',
-            col2: 'California',
-            col3: 'Earthquake',
-            col4: 'Low',
-            col5: <div>
-                <button>Send Alert</button>
-            </div>
-          },
-          {
-            col1: '2',
-            col2: 'Kanamala',
-            col3: 'Flood',
-            col4: 'Low',
-            col5: <div>
-                <button>Send Alert</button>
-            </div>
-          },
-          {
-            col1: '3',
-            col2: 'Panchalimedu',
-            col3: 'Landslide',
-            col4: 'High',
-            col5: <div>
-                <button>Send Alert</button>
-            </div>
-          },
-        ],
-        []
+        () => {
+            return apiData!=null ? apiData.current_events.map((event, index) => {
+                if(parseInt(event.location_frequency[0])<40) {
+                    return {}
+                }
+                return {
+                    col1: index+1,
+                    col2: event.locations[0],
+                    col3: event.event_type,
+                    col4: event.location_frequency[0],
+                    col5: <div><button>Send Alert</button></div>
+                }
+            }) : [] 
+        },   
+        [apiData]
       )
+
     const columns = React.useMemo(
         () => [
             {
-            Header: ' ',
+            Header: '#',
             accessor: 'col1',
             },
             {
@@ -61,7 +61,7 @@ export default function Mainevents() {
                 accessor: 'col3',
             },
             {
-                Header: 'Severity',
+                Header: 'Tweet Frequency',
                 accessor: 'col4',
             },
             {
