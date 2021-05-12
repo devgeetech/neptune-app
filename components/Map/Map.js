@@ -37,7 +37,8 @@ const Map = () => {
 
     useEffect(() => {
         if(data){
-            if(data.current_event.locations.length>=1){
+
+            if(data.current_event!==null && data.current_event.locations.length>=1){
                 updGeoCenter(geocodes[data.current_event.locations[0]])
             }
         }
@@ -48,39 +49,40 @@ const Map = () => {
         console.log(geoCenter)
     }
 
-    const Markers = data ? 
-        data.current_event.locations.length>=1 ?
-            data.current_event.locations.map((locName, locIndex) => {
-                if(geocodes[locName]) {
-                    return(
-                        <FeatureGroup pathOptions={purpleOptions} key={locIndex}>
-                            <Circle center={geocodes[locName]} radius={data.current_event.location_frequency[locIndex] * 2000} />
-                            {/* <Marker 
-                                position={geocodes[locName]}
-                                draggable={false}
-                                animate={true}
-                            >
-                            </Marker> */}
-                            <Popup>
-                                <div>
+    const Markers = data ?
+        data.current_event!==null?
+            data.current_event.locations.length>=1 ?
+                data.current_event.locations.map((locName, locIndex) => {
+                    if(geocodes[locName]) {
+                        return(
+                            <FeatureGroup pathOptions={purpleOptions} key={locIndex}>
+                                <Circle center={geocodes[locName]} radius={data.current_event.location_frequency[locIndex] * 2000} />
+                                {/* <Marker 
+                                    position={geocodes[locName]}
+                                    draggable={false}
+                                    animate={true}
+                                >
+                                </Marker> */}
+                                <Popup>
                                     <div>
-                                        <strong>Location:</strong> {locName}
+                                        <div>
+                                            <strong>Location:</strong> {locName}
+                                        </div>
+                                        <div>
+                                            <strong>Type:</strong> {data.current_event.event_type ? data.current_event.event_type : "N/A"}
+                                        </div>
+                                        <div>
+                                            <strong>Severity:</strong> {data.current_event.location_frequency[locIndex]}
+                                        </div>
                                     </div>
-                                    <div>
-                                        <strong>Type:</strong> {data.current_event.event_type ? data.current_event.event_type : "N/A"}
-                                    </div>
-                                    <div>
-                                        <strong>Severity:</strong> {data.current_event.location_frequency[locIndex]}
-                                    </div>
-                                </div>
-                            </Popup>
-                        </FeatureGroup>
-                    )
-                } else {
-                    return []
-                }
-            }) 
-                : [] : []
+                                </Popup>
+                            </FeatureGroup>
+                        )
+                    } else {
+                        return []
+                    }
+                }) 
+                    : [] : [] : []
        
     const helpMarkers = data ? 
         data.help_tweets.length>0 ?
