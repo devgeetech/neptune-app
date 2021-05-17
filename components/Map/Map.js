@@ -1,20 +1,17 @@
 import {useEffect, useState} from "react"
-import { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Circle } from 'react-leaflet'
+import { Map, TileLayer, Marker, Popup, FeatureGroup, Circle } from "react-leaflet"
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css'
 import "leaflet-defaulticon-compatibility";
-// import DataHydrator from '../utils/dataHydrator'
 import { useQuery, gql } from "@apollo/client";
 
 import Spinner from '../UI/Spinner/Spinner'
 import {geocodes} from '../utils/geoCoding'
 
-// import {  iconSOS  } from './Icons';
-
 const QUERY = gql`
   query getCurrentEvents{
     current_events {
-      _id
+      _id 
       event_type
       location_frequency
       locations
@@ -30,7 +27,7 @@ const QUERY = gql`
 
 const purpleOptions = { color: 'purple' }
 
-const Map = () => {
+const MapM = () => {
 
     const { data } = useQuery(QUERY);
     const [reqMapData, updateReqMapData] = useState(null)
@@ -55,18 +52,12 @@ const Map = () => {
     const Markers = data ?
         reqMapData!==null?
             reqMapData.map(eventLocation => {
-                eventLocation.locations.length>=1 ?
+                return eventLocation.locations.length>=1 ?
                     eventLocation.locations.map((locName, locIndex) => {
                         if(geocodes[locName]) {
                             return(
                                 <FeatureGroup pathOptions={purpleOptions} key={locIndex}>
                                     <Circle center={geocodes[locName]} radius={(eventLocation.location_frequency[locIndex] * 2000) > 100000 ? 100000 :  eventLocation.location_frequency[locIndex] * 2000} />
-                                    {/* <Marker 
-                                        position={geocodes[locName]}
-                                        draggable={false}
-                                        animate={true}
-                                    >
-                                    </Marker> */}
                                     <Popup>
                                         <div>
                                             <div>
@@ -122,7 +113,7 @@ const Map = () => {
                 : [] : []            
 
     const MapComp =()=> (
-        <MapContainer center={geoCenter} zoom={7} scrollWheelZoom={false} style={{height: "100%", width: "100%"}}>
+        <Map center={geoCenter} zoom={7} scrollWheelZoom={false} style={{height: "100%", width: "100%"}}>
             <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
@@ -133,7 +124,7 @@ const Map = () => {
             {helpMarkers.map(el => {
                 return el
             })}
-        </MapContainer>
+        </Map>
     )
 
     return (
@@ -143,4 +134,4 @@ const Map = () => {
     )
 }
 
-export default Map
+export default MapM
