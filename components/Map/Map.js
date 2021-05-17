@@ -55,7 +55,7 @@ const Map = () => {
     const Markers = data ?
         reqMapData!==null?
             reqMapData.map(eventLocation => {
-                return eventLocation.locations.length>=1 ?
+                eventLocation.locations.length>=1 ?
                     eventLocation.locations.map((locName, locIndex) => {
                         if(geocodes[locName]) {
                             return(
