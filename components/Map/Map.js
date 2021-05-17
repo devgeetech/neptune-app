@@ -88,9 +88,7 @@ const Map = () => {
                     }) 
                         : []
             })
-             : [] : []
-
-    console.log(Markers)         
+             : [] : []         
        
     const helpMarkers = data ? 
         data.help_tweets.length>0 ?
