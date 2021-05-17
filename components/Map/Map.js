@@ -13,7 +13,7 @@ import {geocodes} from '../utils/geoCoding'
 
 const QUERY = gql`
   query getCurrentEvents{
-    current_event {
+    current_events {
       _id
       event_type
       location_frequency
@@ -33,13 +33,16 @@ const purpleOptions = { color: 'purple' }
 const Map = () => {
 
     const { data } = useQuery(QUERY);
+    const [reqMapData, updateReqMapData] = useState(null)
     const [geoCenter, updGeoCenter] = useState([9.299283023092007, 76.61524601418083])
 
     useEffect(() => {
         if(data){
-
-            if(data.current_event!==null && data.current_event.locations.length>=1){
-                updGeoCenter(geocodes[data.current_event.locations[0]])
+            updateReqMapData(data.current_events)
+            if(data.current_events!==null && data.current_events[0].locations.length>=1){
+                if(geocodes[data.current_events[0].locations[0]]) {
+                    updGeoCenter(geocodes[data.current_events[0].locations[0]])
+                }
             }
         }
     }, [data])
@@ -50,39 +53,44 @@ const Map = () => {
     }
 
     const Markers = data ?
-        data.current_event!==null?
-            data.current_event.locations.length>=1 ?
-                data.current_event.locations.map((locName, locIndex) => {
-                    if(geocodes[locName]) {
-                        return(
-                            <FeatureGroup pathOptions={purpleOptions} key={locIndex}>
-                                <Circle center={geocodes[locName]} radius={data.current_event.location_frequency[locIndex] * 2000} />
-                                {/* <Marker 
-                                    position={geocodes[locName]}
-                                    draggable={false}
-                                    animate={true}
-                                >
-                                </Marker> */}
-                                <Popup>
-                                    <div>
+        reqMapData!==null?
+            reqMapData.map(eventLocation => {
+                return eventLocation.locations.length>=1 ?
+                    eventLocation.locations.map((locName, locIndex) => {
+                        if(geocodes[locName]) {
+                            return(
+                                <FeatureGroup pathOptions={purpleOptions} key={locIndex}>
+                                    <Circle center={geocodes[locName]} radius={(eventLocation.location_frequency[locIndex] * 2000) > 100000 ? 100000 :  eventLocation.location_frequency[locIndex] * 2000} />
+                                    {/* <Marker 
+                                        position={geocodes[locName]}
+                                        draggable={false}
+                                        animate={true}
+                                    >
+                                    </Marker> */}
+                                    <Popup>
                                         <div>
-                                            <strong>Location:</strong> {locName}
+                                            <div>
+                                                <strong>Location:</strong> {locName}
+                                            </div>
+                                            <div>
+                                                <strong>Type:</strong> {eventLocation.event_type ? eventLocation.event_type : "N/A"}
+                                            </div>
+                                            <div>
+                                                <strong>Severity:</strong> {eventLocation.location_frequency[locIndex]}
+                                            </div>
                                         </div>
-                                        <div>
-                                            <strong>Type:</strong> {data.current_event.event_type ? data.current_event.event_type : "N/A"}
-                                        </div>
-                                        <div>
-                                            <strong>Severity:</strong> {data.current_event.location_frequency[locIndex]}
-                                        </div>
-                                    </div>
-                                </Popup>
-                            </FeatureGroup>
-                        )
-                    } else {
-                        return []
-                    }
-                }) 
-                    : [] : [] : []
+                                    </Popup>
+                                </FeatureGroup>
+                            )
+                        } else {
+                            return []
+                        }
+                    }) 
+                        : []
+            })
+             : [] : []
+
+    console.log(Markers)         
        
     const helpMarkers = data ? 
         data.help_tweets.length>0 ?
