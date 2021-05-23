@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery, gql } from "@apollo/client";
 import { useTable } from "react-table";
 import Head from 'next/head'
@@ -7,6 +7,8 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 
 import Layout from '../../components/Layout/Layout'
+import LargeModal from '../../components/modal/largeModal'
+import SendMessageModal from "../../components/modal/sendMessageModal";
 
 import styles from '../../styles/Subevents.module.css'
 
@@ -23,10 +25,52 @@ const QUERY = gql`
 
 export default function Mainevents() {
 
+    const [largeModalData, updateLargeModalData] = useState(null)
+    const [showLargeModal, updateShowLargeModal] = useState(0)
+
     const { user } = useUser();
     const router = useRouter()
 
     const { data: apiData } = useQuery(QUERY);
+
+    const toggleShowLargeModal = () => {
+      updateShowLargeModal(!showLargeModal)
+    }
+
+    const showMessageModal = ( location, event ) => {
+        updateLargeModalData(
+            <SendMessageModal 
+                location={location} 
+                event={event} 
+                onConfirmHandler={(phone, body) => {
+                    sendMessage(phone, body)
+                }}
+                _close={() => {
+                    updateLargeModalData(null)
+                    updateShowLargeModal(0)
+                }}
+                />
+        )
+        toggleShowLargeModal()
+    }
+
+    const sendMessage = async (phone, body) => {
+        const res = await fetch("/api/sendMessage", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ to: phone, body: body }),
+        });
+      
+        const data = await res.json();
+    
+        if (data.success) {
+            console.log("Success")
+        } else {
+            console.log("Error")
+        }
+    }
 
     const data = React.useMemo(
         () => {
@@ -39,7 +83,7 @@ export default function Mainevents() {
                     col2: event.locations[0],
                     col3: event.event_type,
                     col4: event.location_frequency[0],
-                    col5: <div><button>Send Alert</button></div>
+                    col5: <div><button onClick={() => showMessageModal(event.locations[0], event.event_type)}>Send Alert</button></div>
                 }
             }) : [] 
         },   
@@ -156,6 +200,9 @@ export default function Mainevents() {
                     </table>
                 </div>
             </div>
+            <LargeModal show={showLargeModal} clicked={toggleShowLargeModal}>
+                {largeModalData}
+            </LargeModal>
         </Layout>
         </div> 
     ) 
