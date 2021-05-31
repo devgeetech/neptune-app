@@ -61,7 +61,7 @@ export default function Subevents() {
                                 onClick={() => {
                                     resolveRequest({
                                         variables: {
-                                            id: help_tweet._id
+                                            tweet: help_tweet.tweet
                                         }
                                     })
                                 }}
