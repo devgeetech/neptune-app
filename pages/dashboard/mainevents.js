@@ -30,6 +30,7 @@ export default function Mainevents() {
 
     const { user } = useUser();
     const router = useRouter()
+    const home=`neptune-app.vercel.app`
 
     const { data: apiData } = useQuery(QUERY);
 
@@ -83,8 +84,21 @@ export default function Mainevents() {
                     col2: event.locations[0],
                     col3: event.event_type,
                     col4: event.location_frequency[0],
-                    col5: <div><button onClick={() => showMessageModal(event.locations[0], event.event_type)}>Send Alert</button></div>
-                }
+                    col5:   <div className={styles.subevents__table__action}>
+                                <button 
+                                    className={styles.subevents__table__action__button}
+                                    onClick={() => showMessageModal(event.locations[0], event.event_type)}>
+                                    Send Alert
+                                </button>
+                                <a 
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                    className={styles.subevents__table__action__link}
+                                    href={`https://twitter.com/share?url=${home}&text=${event.event_type}%20reported%20in%20${event.locations[0]}`}>
+                                        Tweet
+                                    </a>
+                            </div>
+                } 
             }) : [] 
         },   
         [apiData]

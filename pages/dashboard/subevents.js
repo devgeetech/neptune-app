@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 import { useTable } from "react-table";
 import Head from 'next/head'
 import { useUser } from '@auth0/nextjs-auth0';
@@ -13,6 +13,7 @@ import styles from '../../styles/Subevents.module.css'
 const QUERY = gql`
   query getCurrentEvents{
     help_tweets(query: {status: "1"}) {
+        _id
         location
         status
         timestamp
@@ -21,12 +22,32 @@ const QUERY = gql`
   }
 `;
 
+const DELETE_REQUEST = gql`
+    mutation updateRequest($tweet: String){
+        updateOneHelp_tweet(query: {tweet: $tweet}, set: {status: "2"}) {
+            _id
+            location
+            status
+            timestamp
+            tweet
+        }
+    }
+`;
+
 export default function Subevents() {
 
     const { user } = useUser();
     const router = useRouter()
 
-    const { data: apiData } = useQuery(QUERY);
+    const { data: apiData, refetch } = useQuery(QUERY);
+    const [resolveRequest] = useMutation(DELETE_REQUEST, {
+        onCompleted : () => {
+            refetch()
+        },
+        onError: (err) => {
+            console.log(err)
+        }
+    })
 
     const data = React.useMemo(
         () => {
@@ -35,7 +56,17 @@ export default function Subevents() {
                     col1: index+1,
                     col2: help_tweet.tweet,
                     col3: help_tweet.location,
-                    col4: <div><button>Resolve</button></div>
+                    col4: <div>
+                            <button
+                                onClick={() => {
+                                    resolveRequest({
+                                        variables: {
+                                            id: help_tweet._id
+                                        }
+                                    })
+                                }}
+                            >Resolve</button>
+                            </div>
                 }
             }) : [] 
         },   
