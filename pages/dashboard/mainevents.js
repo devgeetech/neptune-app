@@ -53,6 +53,7 @@ export default function Mainevents() {
                 />
         )
         toggleShowLargeModal()
+        
     }
 
     const sendMessage = async (phone, body) => {

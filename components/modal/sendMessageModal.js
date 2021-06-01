@@ -1,9 +1,13 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 const SendMessageModal = ({ location, event, onConfirmHandler, _close }) => {
 
     const [phone, setPhone] = useState("")
-    const [body, setBody] = useState(`${event} reported in ${location}! Respond Immediately`)
+    const [body, setBody] = useState("")
+
+    useEffect(() => {
+        setBody(`${event} reported in ${location}! Respond Immediately`)
+    }, [location, event, setBody])
 
     return(
         <div
