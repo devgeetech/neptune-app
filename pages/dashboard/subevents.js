@@ -18,6 +18,7 @@ const QUERY = gql`
         status
         timestamp
         tweet
+        tweet_id
     }
   }
 `;
@@ -56,16 +57,29 @@ export default function Subevents() {
                     col1: index+1,
                     col2: help_tweet.tweet,
                     col3: help_tweet.location,
-                    col4: <div>
-                            <button
-                                onClick={() => {
-                                    resolveRequest({
-                                        variables: {
-                                            tweet: help_tweet.tweet
-                                        }
-                                    })
-                                }}
-                            >Resolve</button>
+                    col4: <div className={styles.subevents__table__action}>
+                                <button
+                                    className={styles.subevents__table__action__button}
+                                    onClick={() => {
+                                        resolveRequest({
+                                            variables: {
+                                                tweet: help_tweet.tweet
+                                            }
+                                        })
+                                    }}
+                                >Resolve</button>
+                                {
+                                    help_tweet.tweet_id!=="" ? 
+                                        <a 
+                                            target="_blank"
+                                            rel="noreferrer noopener"
+                                            className={styles.subevents__table__action__link}
+                                            href={`https://twitter.com/intent/tweet?in_reply_to=${help_tweet.tweet_id}&text=Neptune%20system%20is%20aware%20of%20the%20incident%20and%20will%20respond%20shortly`}>
+                                                Respond
+                                        </a>
+                                        : null
+                                }
+                                
                             </div>
                 }
             }) : [] 
